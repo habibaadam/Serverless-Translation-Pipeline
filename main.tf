@@ -92,6 +92,14 @@ resource "aws_iam_role_policy" "lambda_policy" {
         Action   = ["translate:TranslateText"]
         Resource = "*"
       },
+       {
+        Effect   = "Allow"
+        Action   = [
+          "translate:TranslateText",
+          "comprehend:DetectDominantLanguage" 
+        ]
+        Resource = "*"
+      },
       {
         Effect = "Allow"
         Action = [
