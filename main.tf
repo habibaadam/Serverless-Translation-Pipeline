@@ -31,6 +31,8 @@ resource "aws_s3_bucket_lifecycle_configuration" "request_lifecycle" {
     id     = "expire-objects"
     status = "Enabled"
 
+    filter {}
+
     expiration {
       days = 30
     }
@@ -43,6 +45,8 @@ resource "aws_s3_bucket_lifecycle_configuration" "response_lifecycle" {
   rule {
     id     = "expire-objects"
     status = "Enabled"
+
+    filter {}
 
     expiration {
       days = var.lifecycle_expiration_days
@@ -104,14 +108,14 @@ resource "aws_iam_role_policy" "lambda_policy" {
 # --- Package Lambda ---
 data "archive_file" "lambda_zip" {
   type        = "zip"
-  source_file = "${path.module}/lambdafunc.py"
-  output_path = "${path.module}/lambdafunc.zip"
+  source_file = "${path.module}/lambda_func.py"
+  output_path = "${path.module}/lambda_func.zip"
 }
 
 resource "aws_lambda_function" "translate" {
   function_name = "habi-translate-lambda"
   role          = aws_iam_role.lambda_role.arn
-  handler       = "lambda.lambda_handler"
+  handler       = "lambda_func.lambda_handler"
   runtime       = "python3.12"
   memory_size   = 256
   timeout       = 60

@@ -1,9 +1,10 @@
 import boto3
 import json
+import os
 
 s3 = boto3.client('s3')
 
-RESPONSE_BUCKET = "habi-response-bucket"
+RESPONSE_BUCKET = os.environ.get("RESPONSE_BUCKET", "habi-response-bucket")
 
 def lambda_handler(event, context):
     try:
