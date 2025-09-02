@@ -3,8 +3,10 @@ import json
 import os
 
 s3 = boto3.client('s3')
+translate = boto3.client('translate')
 
 RESPONSE_BUCKET = os.environ.get("RESPONSE_BUCKET", "habi-response-bucket")
+DEFAULT_TARGET_LANG = os.environ.get("DEFAULT_TARGET_LANG", "fr")
 
 def lambda_handler(event, context):
     try:
@@ -17,13 +19,24 @@ def lambda_handler(event, context):
         content = response['Body'].read().decode('utf-8')
         data = json.loads(content)
 
-        # 3. Do "translation" (replace with real logic)
+        # 3. Translate using AWS Translate
         word = data.get("word", "")
-        translated_word = f"{word} (translated to Twi)"
+        target_lang = data.get("target_language", DEFAULT_TARGET_LANG)
+        if word:
+            translation = translate.translate_text(
+                Text=word,
+                SourceLanguageCode="auto",
+                TargetLanguageCode=target_lang
+            )
+            translated_word = translation.get("TranslatedText", "")
+        else:
+            translated_word = ""
+
         result = {
             "original": word,
             "translated": translated_word
-            }
+        }
+
         # 4. Save result into response bucket
         output_key = key.replace(".json", "_translated.json")
 
@@ -32,7 +45,7 @@ def lambda_handler(event, context):
             Key=output_key,
             Body=json.dumps(result),
             ContentType="application/json"
-            )
+        )
         print(f"Processed {key} and saved result to {output_key} in {RESPONSE_BUCKET}")
         return {"status": "success", "output_file": output_key}
     except Exception as e:
