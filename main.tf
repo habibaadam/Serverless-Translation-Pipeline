@@ -12,28 +12,36 @@ terraform {
 }
 
 provider "aws" {
-    region = "us-east-1" # change region if you like
+    region = "us-east-1"
 }
 
 # --- S3 Buckets ---
 resource "aws_s3_bucket" "request" {
     bucket = "habi-request-bucket"
+}
 
-    lifecycle_rule {
-        enabled = true
+resource "aws_s3_bucket_lifecycle_configuration" "request_lifecycle" {
+    bucket = aws_s3_bucket.request.id
+
+    rule {
+        id = "expire-objects"
+        status = "Enabled"
+
         expiration {
             days = 30
         }
     }
 }
 
-resource "aws_s3_bucket" "response" {
-    bucket = "habi-response-bucket"
+resource "aws_s3_bucket_lifecycle_configuration" "response_lifecycle" {
+    bucket = aws_s3_bucket.response.id
 
-    lifecycle_rule {
-        enabled = true
+    rule {
+        id = "expire-objects"
+        status = "Enabled"
+
         expiration {
-            days = 60
+            days = 30
         }
     }
 }
