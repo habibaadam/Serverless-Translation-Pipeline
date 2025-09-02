@@ -2,7 +2,7 @@ import boto3
 import json
 
 s3 = boto3.client('s3')
-# Change this to your actual response bucket name
+
 RESPONSE_BUCKET = "habi-response-bucket"
 
 def lambda_handler(event, context):
