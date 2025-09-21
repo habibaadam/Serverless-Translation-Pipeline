@@ -15,7 +15,7 @@ provider "aws" {
   region = var.region
 }
 
-# --- S3 Buckets ---
+
 resource "aws_s3_bucket" "request" {
   bucket = var.request_bucket_name
 }
@@ -54,7 +54,7 @@ resource "aws_s3_bucket_lifecycle_configuration" "response_lifecycle" {
   }
 }
 
-# --- IAM Role for Lambda ---
+
 resource "aws_iam_role" "lambda_role" {
   name = "habi-translate-lambda-role"
 
@@ -96,7 +96,7 @@ resource "aws_iam_role_policy" "lambda_policy" {
         Effect   = "Allow"
         Action   = [
           "translate:TranslateText",
-          "comprehend:DetectDominantLanguage" 
+          "comprehend:DetectDominantLanguage"
         ]
         Resource = "*"
       },
@@ -113,7 +113,7 @@ resource "aws_iam_role_policy" "lambda_policy" {
   })
 }
 
-# --- Package Lambda ---
+
 data "archive_file" "lambda_zip" {
   type        = "zip"
   source_file = "${path.module}/lambda_func.py"
@@ -137,7 +137,7 @@ resource "aws_lambda_function" "translate" {
   }
 }
 
-# --- Allow S3 -> Lambda ---
+
 resource "aws_lambda_permission" "allow_s3" {
   statement_id  = "AllowExecutionFromS3"
   action        = "lambda:InvokeFunction"
