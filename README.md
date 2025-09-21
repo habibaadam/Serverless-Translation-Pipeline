@@ -1,4 +1,4 @@
-# Cloud-Capstone
+# Serverless Translation Pipeline
 
 ## Overview
 
